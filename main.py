@@ -1,17 +1,28 @@
 from fastapi import FastAPI
+from src import donaterClass,donaterList
+
 
 
 gawab = FastAPI()
-items = []
+
+donater_list = donaterList.donaterList()
+
+
+
+
+
 @gawab.get("/")
 def root():  
     return {"message": "Hello World"}
 
-@gawab.post("/items")
-def create_item(item: str):
-    items.append(item)
-    return {"added": item, "items": items}
 
-@gawab.get("/items")
-def list_items():
-    return items   
+
+@gawab.post("/signup")
+def create_donater(userID: str, name: str, email: str, phone: str, nationalID: str, address: str, password: str):
+    donater = donaterClass.cDonater(userID, name, email, phone, nationalID, address, password)
+    donater_list.add_donater(donater)
+    return {"message": "Donater created successfully"}
+
+@gawab.get("/donaters")
+def get_donaters():
+    return donater_list.get_donaters()
