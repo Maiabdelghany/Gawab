@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from src import donaterClass,donaterList
+from src import donaterClass
 
 
 
 gawab = FastAPI()
 
-donater_list = donaterList.donaterList()
+donater_list = donaterClass.donaterList()
 
 
 
