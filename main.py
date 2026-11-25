@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src import donaterClass
+from src.Classes import donaterClass
 
 
 

@@ -1,0 +1,2 @@
+run the server: uvicorn main:app --reload   
+post a donater: curl.exe -X POST "http://127.0.0.1:8000/signup?userID=123&name=John&email=john@example.com&phone=01012345678&nationalID=29001010101234&address=Cairo&password=secret123"  
