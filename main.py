@@ -31,9 +31,8 @@ def health_check(db: Annotated[Session, Depends(get_db)]):
             "status": "healthy",
             "database": "connected"
         }
-    except SQLAlchemyError as error:
-        return {
-            "status": "unhealthy",
-            "database": "disconnected",
-            "error": str(error)
-        }
+    except SQLAlchemyError:
+        raise HTTPException(
+            status_code=503,
+            detail="Database disconnected"
+        )
