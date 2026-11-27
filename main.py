@@ -1,7 +1,10 @@
 
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
+from typing import Annotated
+
+from fastapi import Depends, FastAPI
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from src.Data.database import get_db
 
@@ -21,14 +24,14 @@ def home():
 
 
 @app.get("/health")
-def health_check(db: Session = Depends(get_db)):
+def health_check(db: Annotated[Session, Depends(get_db)]):
     try:
         db.execute(text("SELECT 1"))
         return {
             "status": "healthy",
             "database": "connected"
         }
-    except Exception as error:
+    except SQLAlchemyError as error:
         return {
             "status": "unhealthy",
             "database": "disconnected",

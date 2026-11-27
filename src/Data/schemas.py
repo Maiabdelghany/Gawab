@@ -1,11 +1,10 @@
 
-from datetime import datetime, date
+from datetime import date as Date
+from datetime import datetime
 from decimal import Decimal
-from typing import Optional, Any
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
-
 
 # User Schemas
 
@@ -14,9 +13,9 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     role: str
-    national_id: Optional[str] = None
-    phone: Optional[str] = None
-    address: Optional[str] = None
+    national_id: str | None = None
+    phone: str | None = None
+    address: str | None = None
 
 
 class UserLogin(BaseModel):
@@ -29,10 +28,10 @@ class UserResponse(BaseModel):
     role: str
     name: str
     email: EmailStr
-    phone: Optional[str] = None
-    address: Optional[str] = None
+    phone: str | None = None
+    address: str | None = None
     is_verified: bool
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -43,9 +42,9 @@ class UserResponse(BaseModel):
 class DonationPostCreate(BaseModel):
     category: str
     title: str
-    details: Optional[dict[str, Any]] = None
-    photo_path: Optional[str] = None
-    location: Optional[str] = None
+    details: dict[str, Any] | None = None
+    photo_path: str | None = None
+    location: str | None = None
 
 
 class DonationPostResponse(BaseModel):
@@ -53,11 +52,11 @@ class DonationPostResponse(BaseModel):
     donor_id: int
     category: str
     title: str
-    details: Optional[dict[str, Any]] = None
-    photo_path: Optional[str] = None
-    location: Optional[str] = None
+    details: dict[str, Any] | None = None
+    photo_path: str | None = None
+    location: str | None = None
     status: str
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -73,7 +72,7 @@ class ClaimResponse(BaseModel):
     post_id: int
     charity_id: int
     status: str
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -82,21 +81,21 @@ class ClaimResponse(BaseModel):
 
 class CampaignCreate(BaseModel):
     title: str
-    category: Optional[str] = None
-    description: Optional[str] = None
+    category: str | None = None
+    description: str | None = None
     goal: Decimal = Field(gt=0)
-    deadline: Optional[date] = None
+    deadline: Date | None = None
 
 
 class CampaignResponse(BaseModel):
     id: int
     charity_id: int
     title: str
-    category: Optional[str] = None
-    description: Optional[str] = None
+    category: str | None = None
+    description: str | None = None
     goal: Decimal
     raised: Decimal
-    deadline: Optional[date] = None
+    deadline: Date | None = None
     status: str
 
     model_config = ConfigDict(from_attributes=True)
@@ -114,7 +113,7 @@ class MoneyDonationResponse(BaseModel):
     donor_id: int
     campaign_id: int
     amount: Decimal
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -122,23 +121,23 @@ class MoneyDonationResponse(BaseModel):
 # Volunteer Opportunity Schemas
 
 class VolunteerOpportunityCreate(BaseModel):
-    title: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    needed: Optional[int] = Field(default=None, ge=0)
-    when_text: Optional[str] = None
-    location: Optional[str] = None
+    title: str | None = None
+    category: str | None = None
+    description: str | None = None
+    needed: int | None = Field(default=None, ge=0)
+    when_text: str | None = None
+    location: str | None = None
 
 
 class VolunteerOpportunityResponse(BaseModel):
     id: int
     charity_id: int
-    title: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    needed: Optional[int] = None
-    when_text: Optional[str] = None
-    location: Optional[str] = None
+    title: str | None = None
+    category: str | None = None
+    description: str | None = None
+    needed: int | None = None
+    when_text: str | None = None
+    location: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -146,21 +145,21 @@ class VolunteerOpportunityResponse(BaseModel):
 # Volunteer Application Schemas
 
 class VolunteerApplicationCreate(BaseModel):
-    opportunity_id: Optional[int] = None
-    date: Optional[date] = None
-    hours: Optional[str] = None
-    area: Optional[str] = None
-    note: Optional[str] = None
+    opportunity_id: int | None = None
+    date: Date | None = None
+    hours: str | None = None
+    area: str | None = None
+    note: str | None = None
 
 
 class VolunteerApplicationResponse(BaseModel):
     id: int
-    opportunity_id: Optional[int] = None
+    opportunity_id: int | None = None
     volunteer_id: int
-    date: Optional[date] = None
-    hours: Optional[str] = None
-    area: Optional[str] = None
-    note: Optional[str] = None
+    date: Date | None = None
+    hours: str | None = None
+    area: str | None = None
+    note: str | None = None
     status: str
 
     model_config = ConfigDict(from_attributes=True)
@@ -169,24 +168,24 @@ class VolunteerApplicationResponse(BaseModel):
 # Announcement Schemas
 
 class AnnouncementCreate(BaseModel):
-    title: Optional[str] = None
-    message: Optional[str] = None
-    event_date: Optional[date] = None
-    location: Optional[str] = None
-    campaign_id: Optional[int] = None
-    needs: Optional[str] = None
+    title: str | None = None
+    message: str | None = None
+    event_date: Date | None = None
+    location: str | None = None
+    campaign_id: int | None = None
+    needs: str | None = None
 
 
 class AnnouncementResponse(BaseModel):
     id: int
     charity_id: int
-    title: Optional[str] = None
-    message: Optional[str] = None
-    event_date: Optional[date] = None
-    location: Optional[str] = None
-    campaign_id: Optional[int] = None
-    needs: Optional[str] = None
-    created_at: Optional[datetime] = None
+    title: str | None = None
+    message: str | None = None
+    event_date: Date | None = None
+    location: str | None = None
+    campaign_id: int | None = None
+    needs: str | None = None
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -197,10 +196,10 @@ class AnnouncementResponse(BaseModel):
 class NotificationResponse(BaseModel):
     id: int
     user_id: int
-    title: Optional[str] = None
-    message: Optional[str] = None
-    link: Optional[str] = None
+    title: str | None = None
+    message: str | None = None
+    link: str | None = None
     is_read: bool
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)

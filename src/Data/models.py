@@ -1,19 +1,19 @@
 
 from sqlalchemy import (
+    DECIMAL,
+    JSON,
+    TIMESTAMP,
+    Boolean,
     Column,
+    Date,
+    Enum,
+    ForeignKey,
     Integer,
     String,
-    Boolean,
-    Date,
-    DateTime,
     Text,
-    JSON,
-    Enum,
-    DECIMAL,
-    ForeignKey,
-    TIMESTAMP,
     text,
 )
+
 from .database import Base
 
 
