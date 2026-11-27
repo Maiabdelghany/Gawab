@@ -14,7 +14,7 @@ from sqlalchemy import (
     TIMESTAMP,
     text,
 )
-from database import Base
+from .database import Base
 
 
 # 1. Users

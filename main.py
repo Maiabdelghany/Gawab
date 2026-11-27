@@ -1,27 +1,36 @@
-from fastapi import FastAPI
 
-from src.Classes import donaterClass
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 
-gawab = FastAPI()
+from src.Data.database import get_db
 
-donater_list = donaterClass.donaterList()
-
-
-
-
-
-@gawab.get("/")
-def root():  
-    return {"message": "Hello World"}
+app = FastAPI(
+    title="Gawab API",
+    description="Backend API for Gawab Donation Platform",
+    version="1.0.0"
+)
 
 
+@app.get("/")
+def home():
+    return {
+        "message": "Welcome to Gawab API",
+        "status": "Running"
+    }
 
-@gawab.post("/signup")
-def create_donater(userID: str, name: str, email: str, phone: str, nationalID: str, address: str, password: str):
-    donater = donaterClass.cDonater(userID, name, email, phone, nationalID, address, password)
-    donater_list.add_donater(donater)
-    return {"message": "Donater created successfully"}
 
-@gawab.get("/donaters")
-def get_donaters():
-    return donater_list.get_donaters()
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        return {
+            "status": "healthy",
+            "database": "connected"
+        }
+    except Exception as error:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(error)
+        }
