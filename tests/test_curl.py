@@ -26,7 +26,7 @@ class CurlSmokeTest(unittest.TestCase):
                     sys.executable,
                     "-m",
                     "uvicorn",
-                    "main:gawab",
+                    "main:app",
                     "--host",
                     "127.0.0.1",
                     "--port",
@@ -71,7 +71,7 @@ class CurlSmokeTest(unittest.TestCase):
 
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
-                    json.loads(result.stdout), {"message": "Hello World"}
+                    json.loads(result.stdout), {'message': 'Welcome to Gawab API', 'status': 'Running'}
                 )
             finally:
                 if server.poll() is None:

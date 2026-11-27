@@ -1,27 +1,38 @@
-from fastapi import FastAPI
 
-from src.Classes import donaterClass
+from typing import Annotated
 
-gawab = FastAPI()
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-donater_list = donaterClass.donaterList()
+from src.Data.database import get_db
+
+app = FastAPI(
+    title="Gawab API",
+    description="Backend API for Gawab Donation Platform",
+    version="1.0.0"
+)
 
 
+@app.get("/")
+def home():
+    return {
+        "message": "Welcome to Gawab API",
+        "status": "Running"
+    }
 
 
-
-@gawab.get("/")
-def root():  
-    return {"message": "Hello World"}
-
-
-
-@gawab.post("/signup")
-def create_donater(userID: str, name: str, email: str, phone: str, nationalID: str, address: str, password: str):
-    donater = donaterClass.cDonater(userID, name, email, phone, nationalID, address, password)
-    donater_list.add_donater(donater)
-    return {"message": "Donater created successfully"}
-
-@gawab.get("/donaters")
-def get_donaters():
-    return donater_list.get_donaters()
+@app.get("/health")
+def health_check(db: Annotated[Session, Depends(get_db)]):
+    try:
+        db.execute(text("SELECT 1"))
+        return {
+            "status": "healthy",
+            "database": "connected"
+        }
+    except SQLAlchemyError:
+        raise HTTPException(
+            status_code=503,
+            detail="Database disconnected"
+        )
