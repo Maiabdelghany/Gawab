@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+
 from src.Classes import donaterClass
-
-
 
 gawab = FastAPI()
 
