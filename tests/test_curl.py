@@ -20,66 +20,67 @@ class CurlSmokeTest(unittest.TestCase):
             port = sock.getsockname()[1]
 
         project_root = Path(__file__).resolve().parents[1]
-        server_log = tempfile.TemporaryFile()
-        server = subprocess.Popen(
-            [
-                sys.executable,
-                "-m",
-                "uvicorn",
-                "main:gawab",
-                "--host",
-                "127.0.0.1",
-                "--port",
-                str(port),
-            ],
-            cwd=project_root,
-            stdout=server_log,
-            stderr=subprocess.STDOUT,
-        )
-
-        try:
-            deadline = time.monotonic() + 10
-            while time.monotonic() < deadline:
-                if server.poll() is not None:
-                    server_log.seek(0)
-                    output = server_log.read().decode(errors="replace")
-                    self.fail(f"Uvicorn exited before becoming ready:\n{output}")
-
-                with socket.socket() as connection:
-                    connection.settimeout(0.1)
-                    if connection.connect_ex(("127.0.0.1", port)) == 0:
-                        break
-                time.sleep(0.1)
-            else:
-                self.fail("Uvicorn did not become ready within 10 seconds")
-
-            result = subprocess.run(
+        with tempfile.TemporaryFile() as server_log:
+            server = subprocess.Popen(
                 [
-                    curl,
-                    "--fail",
-                    "--silent",
-                    "--show-error",
-                    "--max-time",
-                    "5",
-                    f"http://127.0.0.1:{port}/",
+                    sys.executable,
+                    "-m",
+                    "uvicorn",
+                    "main:gawab",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    str(port),
                 ],
-                capture_output=True,
-                text=True,
-                timeout=7,
-                check=False,
+                cwd=project_root,
+                stdout=server_log,
+                stderr=subprocess.STDOUT,
             )
 
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(json.loads(result.stdout), {"message": "Hello World"})
-        finally:
-            if server.poll() is None:
-                server.terminate()
-                try:
-                    server.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    server.kill()
-                    server.wait(timeout=5)
-            server_log.close()
+            try:
+                deadline = time.monotonic() + 10
+                while time.monotonic() < deadline:
+                    if server.poll() is not None:
+                        server_log.seek(0)
+                        output = server_log.read().decode(errors="replace")
+                        self.fail(f"Uvicorn exited before becoming ready:\n{output}")
+
+                    with socket.socket() as connection:
+                        connection.settimeout(0.1)
+                        if connection.connect_ex(("127.0.0.1", port)) == 0:
+                            break
+                    time.sleep(0.1)
+                else:
+                    self.fail("Uvicorn did not become ready within 10 seconds")
+
+                result = subprocess.run(
+                    [
+                        curl,
+                        "--fail",
+                        "--silent",
+                        "--show-error",
+                        "--max-time",
+                        "5",
+                        f"http://127.0.0.1:{port}/",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=7,
+                    check=False,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    json.loads(result.stdout), {"message": "Hello World"}
+                )
+            finally:
+                if server.poll() is None:
+                    server.terminate()
+                    try:
+                        server.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        server.kill()
+                        server.wait(timeout=5)
 
 
 if __name__ == "__main__":
